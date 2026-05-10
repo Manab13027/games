@@ -1,0 +1,35 @@
+[gd_scene load_steps=2 format=3 uid="uid://vfu4vljffo1f"]
+
+[ext_resource type="Script" path="res://hub/GameCard.gd" id="1_63qj1r"]
+
+[node name="GameCard" type="PanelContainer"]
+custom_minimum_size = Vector2(280, 180)
+script = ExtResource("1_63qj1r")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="GameTitle" type="Label" parent="VBoxContainer"]
+size_flags_horizontal = 3
+text = "GAME"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+
+[node name="BestScore" type="Label" parent="VBoxContainer"]
+size_flags_horizontal = 3
+text = "BEST: 0"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.7, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 16
+
+[node name="PlayButton" type="Button" parent="VBoxContainer"]
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 44)
+text = "PLAY"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
