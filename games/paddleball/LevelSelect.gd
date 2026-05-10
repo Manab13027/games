@@ -1,5 +1,7 @@
 extends Control
 
+const LevelConfig = preload("res://games/paddleball/LevelConfig.gd")
+
 @onready var _list: VBoxContainer = $LevelList
 @onready var _back: Button = $BackButton
 
