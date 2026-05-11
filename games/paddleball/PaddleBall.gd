@@ -17,7 +17,7 @@ const SPEED_TICK: float = 5.0
 @onready var _hud: CanvasLayer = $HUD
 @onready var _targets_root: Node3D = $TargetsRoot
 
-var _config: LevelConfig
+var _config: Dictionary
 var _combo: ComboSystem
 var _score: int = 0
 var _lives: int = 3
@@ -33,13 +33,13 @@ func _ready() -> void:
 	_combo.combo_changed.connect(_on_combo_changed)
 	_combo.ultra_triggered.connect(_on_ultra_triggered)
 
-	_lives = _config.lives
-	_paddle.set_width(_config.paddle_width)
-	_arena.apply_theme(_arena.get_theme_from_string(_config.arena_theme))
+	_lives = _config["lives"]
+	_paddle.set_width(_config["paddle_width"])
+	_arena.apply_theme(_arena.get_theme_from_string(_config["arena_theme"]))
 
 	_hud.set_score(0)
-	_hud.set_level(_config.name)
-	_hud.set_lives(_lives, _config.lives)
+	_hud.set_level(_config["name"])
+	_hud.set_lives(_lives, _config["lives"])
 	_hud.set_combo(1)
 
 	_spawn_targets()
@@ -55,11 +55,11 @@ func _ready() -> void:
 		"space_station": BGM_SPACE,
 		"reactor_core": BGM_REACTOR,
 	}
-	if bgm_map.has(_config.arena_theme):
-		AudioManager.register_music(_config.arena_theme, bgm_map[_config.arena_theme])
-		AudioManager.play_music(_config.arena_theme)
+	if bgm_map.has(_config["arena_theme"]):
+		AudioManager.register_music(_config["arena_theme"], bgm_map[_config["arena_theme"]])
+		AudioManager.play_music(_config["arena_theme"])
 	else:
-		push_error("PaddleBall: unknown arena_theme '%s', falling back to neon_cyber" % _config.arena_theme)
+		push_error("PaddleBall: unknown arena_theme '%s'" % _config["arena_theme"])
 		AudioManager.register_music("neon_cyber", BGM_NEON)
 		AudioManager.play_music("neon_cyber")
 
@@ -75,7 +75,7 @@ func _physics_process(delta: float) -> void:
 		if _balls.size() > 0 and is_instance_valid(_balls[0]):
 			_arena.update_camera_fov(_balls[0].get_speed(), 40.0)
 
-func _get_level_config() -> LevelConfig:
+func _get_level_config() -> Dictionary:
 	var level_id := GameManager.current_level
 	match level_id:
 		"cadet": return LevelConfig.cadet()
@@ -92,21 +92,21 @@ func _spawn_ball() -> void:
 	ball.hit_paddle.connect(_on_ball_hit_paddle.bind(ball))
 	ball.hit_wall.connect(_on_ball_hit_wall)
 	ball.fell_out.connect(_on_ball_fell_out.bind(ball))
-	ball.launch(_config.ball_speed)
+	ball.launch(_config["ball_speed"])
 	_balls.append(ball)
 
 func _spawn_targets() -> void:
-	_targets_remaining = _config.target_count
-	if _config.target_count == 0:
+	_targets_remaining = _config["target_count"]
+	if _config["target_count"] == 0:
 		return
 	var point_values := [100, 300, 500]
-	for i in _config.target_count:
+	for i in _config["target_count"]:
 		var target: Area3D = TARGET_SCENE.instantiate()
 		_targets_root.add_child(target)
 		var col := i % 3
 		var row := i / 3
 		target.position = Vector3(-4.0 + col * 4.0, 2.0 + row * 1.5, -5.0 - row * 1.0)
-		target.setup(point_values[col], _config.targets_move)
+		target.setup(point_values[col], _config["targets_move"])
 		target.destroyed.connect(_on_target_destroyed)
 
 func _on_ball_hit_paddle(hit_pos: Vector3, ball: RigidBody3D) -> void:
@@ -128,7 +128,7 @@ func _on_ball_fell_out(ball: RigidBody3D) -> void:
 		ball.queue_free()
 	_combo.reset()
 	_lives -= 1
-	_hud.set_lives(_lives, _config.lives)
+	_hud.set_lives(_lives, _config["lives"])
 	_arena.shake(0.2)
 	if _lives <= 0:
 		_end_game()
@@ -144,7 +144,7 @@ func _on_target_destroyed(points: int) -> void:
 	_hud.set_score(_score)
 	_targets_remaining -= 1
 	AudioManager.play_sfx("target_hit")
-	if _targets_remaining <= 0 and not _config.is_endless:
+	if _targets_remaining <= 0 and not _config["is_endless"]:
 		_win_level()
 
 func _on_combo_changed(multiplier: int) -> void:
@@ -167,22 +167,22 @@ func _on_ultra_triggered() -> void:
 func _win_level() -> void:
 	Engine.time_scale = 1.0
 	_game_active = false
-	SaveManager.set_high_score("paddleball", _config.id, _score)
+	SaveManager.set_high_score("paddleball", _config["id"], _score)
 	_unlock_next_level()
 	_hud.show_flash("LEVEL COMPLETE!", 2.0)
 	await get_tree().create_timer(2.0).timeout
-	GameManager.go_to_score_screen(_score, _config.id)
+	GameManager.go_to_score_screen(_score, _config["id"])
 
 func _end_game() -> void:
 	Engine.time_scale = 1.0
 	_game_active = false
-	SaveManager.set_high_score("paddleball", _config.id, _score)
+	SaveManager.set_high_score("paddleball", _config["id"], _score)
 	_hud.show_flash("GAME OVER", 2.0)
 	await get_tree().create_timer(2.0).timeout
-	GameManager.go_to_score_screen(_score, _config.id)
+	GameManager.go_to_score_screen(_score, _config["id"])
 
 func _unlock_next_level() -> void:
 	var order := ["rookie", "cadet", "pilot", "ace", "legend", "endless"]
-	var idx := order.find(_config.id)
+	var idx := order.find(_config["id"])
 	if idx >= 0 and idx + 1 < order.size():
 		SaveManager.unlock_level("paddleball", order[idx + 1])

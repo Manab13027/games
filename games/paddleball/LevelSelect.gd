@@ -12,14 +12,14 @@ func _ready() -> void:
 func _build_level_buttons() -> void:
     for config in LevelConfig.get_all_levels():
         var btn := Button.new()
-        var locked := not SaveManager.is_level_unlocked("paddleball", config.id)
-        var best := SaveManager.get_high_score("paddleball", config.id)
+        var locked := not SaveManager.is_level_unlocked("paddleball", config["id"])
+        var best := SaveManager.get_high_score("paddleball", config["id"])
         if locked:
-            btn.text = "🔒 %s" % config.name
+            btn.text = "🔒 %s" % config["name"]
             btn.disabled = true
         else:
-            btn.text = "%s   BEST: %d" % [config.name, best]
-        btn.pressed.connect(_on_level_selected.bind(config.id))
+            btn.text = "%s   BEST: %d" % [config["name"], best]
+        btn.pressed.connect(_on_level_selected.bind(config["id"]))
         _style_button(btn)
         _list.add_child(btn)
 
