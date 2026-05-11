@@ -2,13 +2,7 @@ extends Node3D
 
 const TARGET_SCENE = preload("res://games/paddleball/Target.tscn")
 const BALL_SCENE = preload("res://games/paddleball/Ball.tscn")
-const SFX_PADDLE = preload("res://shared/sounds/paddle_hit.wav")
-const SFX_WALL = preload("res://shared/sounds/wall_hit.wav")
-const SFX_TARGET = preload("res://shared/sounds/target_hit.wav")
-const SFX_COMBO = preload("res://shared/sounds/combo_milestone.wav")
-const BGM_NEON = preload("res://shared/sounds/bgm_neon_cyber.wav")
-const BGM_SPACE = preload("res://shared/sounds/bgm_space_station.wav")
-const BGM_REACTOR = preload("res://shared/sounds/bgm_reactor_core.wav")
+const ComboSystem = preload("res://games/paddleball/ComboSystem.gd")
 const LevelConfig = preload("res://games/paddleball/LevelConfig.gd")
 const SPEED_TICK: float = 5.0
 
@@ -18,7 +12,7 @@ const SPEED_TICK: float = 5.0
 @onready var _targets_root: Node3D = $TargetsRoot
 
 var _config: Dictionary
-var _combo: ComboSystem
+var _combo: RefCounted
 var _score: int = 0
 var _lives: int = 3
 var _balls: Array = []
@@ -26,6 +20,10 @@ var _targets_remaining: int = 0
 var _game_active: bool = false
 var _elapsed: float = 0.0
 var _next_speed_tick: float = SPEED_TICK
+
+# Audio streams loaded at runtime to avoid import errors on placeholder files
+var _sfx: Dictionary = {}
+var _bgm: Dictionary = {}
 
 func _ready() -> void:
 	_config = _get_level_config()
@@ -42,26 +40,35 @@ func _ready() -> void:
 	_hud.set_lives(_lives, _config["lives"])
 	_hud.set_combo(1)
 
+	_load_audio()
 	_spawn_targets()
 	_spawn_ball()
 	_game_active = true
 
-	AudioManager.register_sfx("paddle_hit", SFX_PADDLE)
-	AudioManager.register_sfx("wall_hit", SFX_WALL)
-	AudioManager.register_sfx("target_hit", SFX_TARGET)
-	AudioManager.register_sfx("combo_milestone", SFX_COMBO)
-	var bgm_map := {
-		"neon_cyber": BGM_NEON,
-		"space_station": BGM_SPACE,
-		"reactor_core": BGM_REACTOR,
+func _load_audio() -> void:
+	var sfx_paths := {
+		"paddle_hit": "res://shared/sounds/paddle_hit.wav",
+		"wall_hit": "res://shared/sounds/wall_hit.wav",
+		"target_hit": "res://shared/sounds/target_hit.wav",
+		"combo_milestone": "res://shared/sounds/combo_milestone.wav",
 	}
-	if bgm_map.has(_config["arena_theme"]):
-		AudioManager.register_music(_config["arena_theme"], bgm_map[_config["arena_theme"]])
-		AudioManager.play_music(_config["arena_theme"])
-	else:
-		push_error("PaddleBall: unknown arena_theme '%s'" % _config["arena_theme"])
-		AudioManager.register_music("neon_cyber", BGM_NEON)
-		AudioManager.play_music("neon_cyber")
+	for key in sfx_paths:
+		var stream = load(sfx_paths[key])
+		if stream:
+			_sfx[key] = stream
+			AudioManager.register_sfx(key, stream)
+
+	var bgm_paths := {
+		"neon_cyber": "res://shared/sounds/bgm_neon_cyber.wav",
+		"space_station": "res://shared/sounds/bgm_space_station.wav",
+		"reactor_core": "res://shared/sounds/bgm_reactor_core.wav",
+	}
+	var theme: String = _config["arena_theme"]
+	if bgm_paths.has(theme):
+		var stream = load(bgm_paths[theme])
+		if stream:
+			AudioManager.register_music(theme, stream)
+			AudioManager.play_music(theme)
 
 func _physics_process(delta: float) -> void:
 	if not _game_active:
@@ -100,18 +107,18 @@ func _spawn_targets() -> void:
 	if _config["target_count"] == 0:
 		return
 	var point_values := [100, 300, 500]
-	for i in _config["target_count"]:
+	for i: int in _config["target_count"]:
 		var target: Area3D = TARGET_SCENE.instantiate()
 		_targets_root.add_child(target)
-		var col := i % 3
-		var row := i / 3
+		var col: int = i % 3
+		var row: int = i / 3
 		target.position = Vector3(-4.0 + col * 4.0, 2.0 + row * 1.5, -5.0 - row * 1.0)
 		target.setup(point_values[col], _config["targets_move"])
 		target.destroyed.connect(_on_target_destroyed)
 
 func _on_ball_hit_paddle(hit_pos: Vector3, ball: RigidBody3D) -> void:
 	_combo.record_hit()
-	var spin := _paddle.get_spin_from_hit(hit_pos.x)
+	var spin: float = _paddle.get_spin_from_hit(hit_pos.x)
 	ball.apply_spin(spin)
 	_paddle.emit_hit_sparks()
 	_arena.shake(0.05)
@@ -139,7 +146,7 @@ func _on_ball_fell_out(ball: RigidBody3D) -> void:
 
 func _on_target_destroyed(points: int) -> void:
 	_combo.record_hit()
-	var earned := _combo.calculate_score(points)
+	var earned: int = _combo.calculate_score(points)
 	_score += earned
 	_hud.set_score(_score)
 	_targets_remaining -= 1
@@ -183,6 +190,6 @@ func _end_game() -> void:
 
 func _unlock_next_level() -> void:
 	var order := ["rookie", "cadet", "pilot", "ace", "legend", "endless"]
-	var idx := order.find(_config["id"])
+	var idx: int = order.find(_config["id"])
 	if idx >= 0 and idx + 1 < order.size():
 		SaveManager.unlock_level("paddleball", order[idx + 1])
