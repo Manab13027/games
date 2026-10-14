@@ -1,35 +1,22 @@
 # Games
 
-_TODO: one line on what this project does and who it's for._
+A small **collection of mini-games built with the Godot engine**, launched from
+a shared hub. Includes games such as *paddleball*, with shared assets and a
+common entry scene.
 
-**Stack:** Shell scripts
+## Features
+- Godot project with a hub that launches individual games
+- Example game: paddleball (plus room for more under `games/`)
+- Shared code/assets in `shared/`
+
+## Stack
+Godot Engine (GDScript) · scenes (`.tscn`) + scripts (`.gd`)
 
 ## Getting started
-
+Open the folder in the **Godot editor** and press Play, or:
 ```bash
 ./run.sh
 ```
 
-## Project structure
-
-```
-Main.gd
-Main.tscn
-docs/
-games/
-hub/
-icon.svg
-paddleball/
-project.godot
-run.sh
-shared/
-tests/
-```
-
 ## Notes
-
-_TODO: anything a new user should know — configuration, env vars, known limitations._
-
----
-
-_README scaffolded by readme_gen. Edit the TODOs to finish it._
+- Requires Godot installed. `Main.tscn` is the entry scene.
