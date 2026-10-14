@@ -1,0 +1,37 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes in []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="KidsArcade"
+run/main_scene="res://Main.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/mode/mode=3
+window/stretch/mode="canvas_items"
+
+[physics]
+
+3d/default_gravity=9.8
+
+[autoload]
+
+SaveManager="*res://shared/autoloads/SaveManager.gd"
+GameManager="*res://shared/autoloads/GameManager.gd"
+AudioManager="*res://shared/autoloads/AudioManager.gd"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+renderer/rendering_method.mobile="gl_compatibility"

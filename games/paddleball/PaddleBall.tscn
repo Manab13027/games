@@ -1,0 +1,22 @@
+[gd_scene load_steps=6 format=3 uid="uid://kqav1drnacji"]
+
+[ext_resource type="Script" path="res://games/paddleball/PaddleBall.gd" id="1_pfa0g0"]
+[ext_resource type="PackedScene" path="res://games/paddleball/Arena.tscn" id="2_e0so8w"]
+[ext_resource type="PackedScene" path="res://games/paddleball/Paddle.tscn" id="3_098ecf"]
+[ext_resource type="PackedScene" path="res://games/paddleball/Ball.tscn" id="4_sqv4ia"]
+[ext_resource type="PackedScene" path="res://games/paddleball/HUD.tscn" id="5_wagj2l"]
+
+[node name="PaddleBall" type="Node3D"]
+script = ExtResource("1_pfa0g0")
+
+[node name="Arena" parent="." instance=ExtResource("2_e0so8w")]
+
+[node name="Paddle" parent="." instance=ExtResource("3_098ecf")]
+groups = ["paddle"]
+
+[node name="Ball" parent="." instance=ExtResource("4_sqv4ia")]
+groups = ["ball"]
+
+[node name="HUD" parent="." instance=ExtResource("5_wagj2l")]
+
+[node name="TargetsRoot" type="Node3D" parent="."]

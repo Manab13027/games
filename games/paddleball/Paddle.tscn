@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://hnyd49r84ace"]
+
+[ext_resource type="Script" path="res://games/paddleball/Paddle.gd" id="1_tllrp3"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_bmbzql"]
+size = Vector3(2, 0.15, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rdz2os"]
+size = Vector3(2, 0.15, 0.4)
+
+[node name="Paddle" type="StaticBody3D"]
+script = ExtResource("1_tllrp3")
+
+[node name="PaddleMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_bmbzql")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_rdz2os")
+
+[node name="HitSparks" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 30
+one_shot = true
+lifetime = 0.4

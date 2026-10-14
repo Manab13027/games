@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://p1q5gdr04w4w"]
+
+[ext_resource type="Script" path="res://games/paddleball/Target.gd" id="1_d3u3i5"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_cjlnaa"]
+size = Vector3(0.8, 0.3, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pfgkzu"]
+size = Vector3(0.8, 0.3, 0.3)
+
+[node name="Target" type="Area3D"]
+script = ExtResource("1_d3u3i5")
+
+[node name="TargetMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_cjlnaa")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_pfgkzu")
+
+[node name="TargetLight" type="OmniLight3D" parent="."]
+light_color = Color(0.2, 0.4, 1, 1)
+light_energy = 1.5
+omni_range = 2.0
+
+[node name="DestroyEffect" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 40
+one_shot = true
+lifetime = 0.5

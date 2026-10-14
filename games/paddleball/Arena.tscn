@@ -1,0 +1,108 @@
+[gd_scene load_steps=13 format=3 uid="uid://otz6kvtrwhw4"]
+
+[ext_resource type="Script" path="res://games/paddleball/Arena.gd" id="1_0jebto"]
+
+[sub_resource type="Environment" id="Environment_s2w5dy"]
+background_mode = 1
+background_color = Color(0.012, 0.012, 0.031, 1)
+ambient_light_color = Color(0.1, 0.1, 0.3, 1)
+ambient_light_energy = 0.3
+glow_enabled = true
+glow_intensity = 0.8
+glow_bloom = 0.5
+ssao_enabled = true
+ssao_radius = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_6vj2k4"]
+size = Vector3(12, 0.2, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ots43s"]
+size = Vector3(12, 0.2, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_h596li"]
+size = Vector3(12, 0.2, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_reidtc"]
+size = Vector3(12, 0.2, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_jxkya5"]
+size = Vector3(0.2, 8, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2hmbit"]
+size = Vector3(0.2, 8, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2zbrw2"]
+size = Vector3(0.2, 8, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lb43nv"]
+size = Vector3(0.2, 8, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_32uuts"]
+size = Vector3(12, 8, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7dur5d"]
+size = Vector3(12, 8, 0.2)
+
+[node name="Arena" type="Node3D"]
+script = ExtResource("1_0jebto")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_s2w5dy")
+
+[node name="SunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.25, 0.433, 0, 0.866, 0.5, -0.5, -0.433, 0.75, 0, 10, 0)
+light_energy = 0.5
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.966, 0.259, 0, -0.259, 0.966, 0, 5, 12)
+fov = 75.0
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_6vj2k4")
+
+[node name="FloorCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FloorCollider"]
+shape = SubResource("BoxShape3D_ots43s")
+
+[node name="Ceiling" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
+mesh = SubResource("BoxMesh_h596li")
+
+[node name="CeilingCollider" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CeilingCollider"]
+shape = SubResource("BoxShape3D_reidtc")
+
+[node name="WallLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 4, 0)
+mesh = SubResource("BoxMesh_jxkya5")
+
+[node name="WallLeftCollider" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 4, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallLeftCollider"]
+shape = SubResource("BoxShape3D_2hmbit")
+
+[node name="WallRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 4, 0)
+mesh = SubResource("BoxMesh_2zbrw2")
+
+[node name="WallRightCollider" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 4, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallRightCollider"]
+shape = SubResource("BoxShape3D_lb43nv")
+
+[node name="WallBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -10)
+mesh = SubResource("BoxMesh_32uuts")
+
+[node name="WallBackCollider" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -10)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallBackCollider"]
+shape = SubResource("BoxShape3D_7dur5d")
+
+[node name="TargetSpawnPoints" type="Node3D" parent="."]
